@@ -65,7 +65,7 @@ char *subString(const char *str, int from, int to)
         return dest;
 }
 
-void substr(char *dest, char *string, int from, int to)
+void substr(char *dest, char *string, int from, int to) /* corta un string desde la casilla n (from) hasta la casilla m (to) y lo mete en dest */
 {
         int length = to - from;
         int x = 0;
@@ -77,7 +77,7 @@ void substr(char *dest, char *string, int from, int to)
         dest[length] = '\0';
 }
 
-void cls()
+void cls()      /* Limpia la consola */
 {
         printf("\e[1;1H\e[2J");
 }
@@ -140,7 +140,7 @@ int select(int len, char *enunciado, ...)
         return -1;
 }
 
-void create_ID(char *ID)
+void create_ID(char *ID) /* Crea un ID Unico tomando la fecha y hora actual*/
 {
 
         time_t rawtime;
@@ -152,7 +152,7 @@ void create_ID(char *ID)
         strftime(ID, 20, "%y%m%H%I%M%S%p", info);
 }
 
-void create_date(char *date)
+void create_date(char *date)    /* Inserta en el parametro date la fecha actual con el formato DIA-MES-AÑO */
 {
         time_t rawtime;
         struct tm *info;
@@ -160,5 +160,5 @@ void create_date(char *date)
 
         info = localtime(&rawtime);
 
-        strftime(date, 10, "%y-%m-%d", info);
+        strftime(date, 10, "%d-%m-%y", info);
 }

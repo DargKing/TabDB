@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "tabdb.h"
 
-int get_len_file(FILE *fp)
+int get_len_file(FILE *fp) // Devuelve la cantidad de caracteres que contiene el archivo
 {
         size_t i = 0;
         while (fgetc(fp) != EOF)
@@ -11,7 +11,7 @@ int get_len_file(FILE *fp)
         return i;
 }
 
-void move_to_line_file(FILE *fp, int row)
+void move_to_line_file(FILE *fp, int row) // Mueve el puntero a una fila en especifico
 {
         fseek(fp, 0, SEEK_SET);
         int line = 0;
@@ -27,8 +27,9 @@ void move_to_line_file(FILE *fp, int row)
         }
 }
 
-void move_to_col_file(FILE *fp, int col)
-{
+void move_to_col_file(FILE *fp, int col) // Mueve el puntero a la columna que se le indique. esta columna pertenecera a la
+{                                        // fila donde este actualmente el puntero. En caso de que el puntero este en una columna diferente a la 0 dara error,
+                                         // el puntero siempre debe de estar en la columna 0 para funcionar correctamente
         int tabs = 0;
         char caracter;
         int i = 0;
@@ -42,7 +43,7 @@ void move_to_col_file(FILE *fp, int col)
         }
 }
 
-int get_len_line_file(FILE *fp, int row)
+int get_len_line_file(FILE *fp, int row) // Devuelve la longitud (cantidad de caracteres) de la fila especificada
 {
         move_to_line_file(fp, row);
         size_t i = 0;
@@ -52,7 +53,7 @@ int get_len_line_file(FILE *fp, int row)
         return i;
 }
 
-int get_len_col_file(FILE *fp, int row, int col)
+int get_len_col_file(FILE *fp, int row, int col) // Devuelve la longitud (cantidad de caracteres) de la columna x de la fila especificada
 {
         move_to_line_file(fp, row);
         size_t i = 0;
@@ -68,7 +69,7 @@ int get_len_col_file(FILE *fp, int row, int col)
         return i;
 }
 
-int gets_lines_file(FILE *fp)
+int gets_lines_file(FILE *fp) // Deuvelve la cantidad de saltos de linea que contiene el archivo (no cuenta los ultimos 2)
 {
         int jumplines = 0;
         char caracter;
@@ -80,7 +81,7 @@ int gets_lines_file(FILE *fp)
         return jumplines - 1;
 }
 
-int gets_jumplines_file(FILE *fp)
+int gets_jumplines_file(FILE *fp) // Devuelve la cantidad de lineas que no estan en blanco
 {
         int jumplines = 0;
         char caracter = fgetc(fp);
@@ -98,7 +99,7 @@ int gets_jumplines_file(FILE *fp)
         return jumplines - 1;
 }
 
-void read_line_file(FILE *fp, int row, char *str)
+void read_line_file(FILE *fp, int row, char *str) // Inserta en la variable str el contenido de la linea especificada
 {
         int i = 0;
         char temp[get_len_line_file(fp, row) + 1];
@@ -120,7 +121,7 @@ void read_line_file(FILE *fp, int row, char *str)
         strcpy(str, temp);
 }
 
-void read_col_file(FILE *fp, int row, int col, char *str)
+void read_col_file(FILE *fp, int row, int col, char *str) // Inserta en la varible str el contenido de la columna n de la linea m
 {
         int i = 0;
         char temp[get_len_col_file(fp, row, col) + 1];
@@ -142,8 +143,9 @@ void read_col_file(FILE *fp, int row, int col, char *str)
         strcpy(str, temp);
 }
 
-int search_data_file(FILE *fp, int col, char *str)
-{
+int search_data_file(FILE *fp, int col, char *str) // Busca en todas las columnas n el dato que se paso en el parametro str
+{                                                  // Si lo encuentra devuelve la linea donde se encuentra, en caso de que en esa columna
+                                                   // esten dos datos iguales se devolvera el primer que se encuentre mas cerca de la linea 0
         int row = 0;
         fseek(fp, 0, SEEK_SET);
 
@@ -181,8 +183,9 @@ int search_data_file(FILE *fp, int col, char *str)
         return -1;
 }
 
-void delete_line_file(FILE *fp, int row)
-{
+void delete_line_file(FILE *fp, int row) // A pesar de que diga que elimina la linea especificada este no la elimina, esta funcion sustituye
+{                                        // Todos los caracteres de la linea por espacios en blanco, convirtiendola en lo que nosotros llamamos
+                                         // Linea en blanco
         move_to_line_file(fp, row);
         fseek(fp, 0, SEEK_CUR);
 
@@ -197,7 +200,7 @@ void delete_line_file(FILE *fp, int row)
         }
 }
 
-void add_line_file(FILE *fp, char *str)
+void add_line_file(FILE *fp, char *str) // Añade el contenido del parametro str al archivo en la ultima linea
 {
         fseek(fp, -2, SEEK_END);
         int i = 0;
@@ -210,7 +213,7 @@ void add_line_file(FILE *fp, char *str)
         fprintf(fp, "\n\n");
 }
 
-void modify_col_file(FILE *fp, int row, int col, char *str)
+void modify_col_file(FILE *fp, int row, int col, char *str) // Se cambia el contenido de la columna n fila m por el contenido del parametro str
 {
         char line[get_len_line_file(fp, row) + 1];
         read_line_file(fp, row, line);
@@ -279,4 +282,15 @@ void modify_col_file(FILE *fp, int row, int col, char *str)
 
         add_line_file(fp, final);
         delete_line_file(fp, row);
+}
+
+int is_blank(FILE *fp, int row) // Revisa si es una linea en blanco o no, devuelve 1 si lo es, de lo contrario devuelve 0
+{
+        move_to_line_file(fp, row);
+
+        char caracter = fgetc(fp);
+
+        if (caracter == ' ')
+                return 1;
+        return 0;
 }
